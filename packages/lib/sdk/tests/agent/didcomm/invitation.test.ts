@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, test, beforeEach, afterEach } from 'vitest';
-import UUIDLib from "@stablelib/uuid";
+import * as UUIDLib from "@stablelib/uuid";
 import { Agent } from "../../../src/edge-agent";
 import { AttachmentDescriptor, DID, MessageDirection, Seed, AgentError } from '@hyperledger/identus-domain';
 import { Apollo, Pluto, ProtocolType } from "../../../src";
