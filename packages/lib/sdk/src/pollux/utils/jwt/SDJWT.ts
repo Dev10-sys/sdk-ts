@@ -101,10 +101,20 @@ export class SDJWT extends Task.Runner {
   async createPresentationFor<T extends SdJwtVcPayload>(options: {
     jws: string,
     privateKey: Domain.PrivateKey,
-    presentationFrame?: PresentationFrame<T>;
+    presentationFrame?: PresentationFrame<T>,
+    challenge?: string,
+    audience?: string,
   }) {
     const sdjwt = new SDJwtVcInstance(this.getSKConfig(options.privateKey));
-    return sdjwt.present<T>(options.jws, options.presentationFrame);
+    return sdjwt.present<T>(options.jws, options.presentationFrame, {
+      kb: (options.challenge || options.audience) ? {
+        payload: {
+          iat: Math.floor(Date.now() / 1000),
+          nonce: options.challenge,
+          aud: options.audience,
+        }
+      } : undefined
+    });
   }
 
   async reveal(
@@ -153,18 +163,22 @@ export class SDJWT extends Task.Runner {
   }
 
   public getSKConfig(privateKey: Domain.PrivateKey): SDJWTVCConfig {
+    const signer = async (data: string | Uint8Array) => {
+      if (!privateKey.isSignable()) {
+        throw new PolluxError.InvalidCredentialError("Cannot sign with this key: key does not support signing");
+      }
+      const signature = privateKey.sign(Buffer.from(data));
+      const signatureEncoded = base64url.baseEncode(signature);
+      return signatureEncoded
+    };
+
     return {
       hashAlg: defaultHashConfig.hasherAlg.toLocaleLowerCase(),
       hasher: defaultHashConfig.hasher,
       signAlg: privateKey.alg.toLocaleLowerCase(),
-      signer: async (data: string | Uint8Array) => {
-        if (!privateKey.isSignable()) {
-          throw new PolluxError.InvalidCredentialError("Cannot sign with this key: key does not support signing");
-        }
-        const signature = privateKey.sign(Buffer.from(data));
-        const signatureEncoded = base64url.baseEncode(signature);
-        return signatureEncoded
-      },
+      signer,
+      kbSigner: signer,
+      kbSignAlg: privateKey.alg.toLocaleLowerCase(),
       saltGenerator: (length: number) => this.saltGenerator(length)
     };
   }

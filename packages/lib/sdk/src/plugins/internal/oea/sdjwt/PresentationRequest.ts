@@ -23,12 +23,18 @@ export class PresentationRequest extends Plugins.Task<Args> {
         throw new Domain.AgentError.CannotFindDIDPrivateKey();
       }
 
+      const presentationRequest = this.args.presentationRequest;
+      const challenge = presentationRequest.options?.challenge;
+      const audience = presentationRequest.options?.domain;
+
       // [ ] https://github.com/hyperledger-identus/sdk-ts/issues/362 PresentationFrame
       const presentationFrame = this.args.presentationFrame ?? {};
       const presentationJWS = await ctx.SDJWT.createPresentationFor({
         jws: credential.id,
         presentationFrame,
         privateKey,
+        challenge,
+        audience,
       });
 
       return Payload.make(OEA.PRISM_SDJWT, presentationJWS);
