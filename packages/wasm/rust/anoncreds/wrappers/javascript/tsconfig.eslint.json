@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@hyperledger/anoncreds-shared": ["anoncreds-shared/src"],
+      "@hyperledger/anoncreds-react-native": ["anoncreds-react-native/src"],
+      "@hyperledger/anoncreds-nodejs": ["anoncreds-nodejs/src"]
+    },
+    "types": ["node"]
+  },
+  "include": [".eslintrc.js", "jest.config.ts", "jest.config.base.ts"],
+  "exclude": ["node_modules", "**/build/**", "build"]
+}

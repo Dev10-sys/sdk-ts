@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@hyperledger/anoncreds-shared": ["anoncreds-shared/src"],
+      "@hyperledger/anoncreds-react-native": ["anoncreds-react-native/src"],
+      "@hyperledger/anoncreds-nodejs": ["anoncreds-nodejs/src"]
+    }
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"],
+    "files": true
+  },
+  "exclude": ["node_modules", "**/build/**", "build", "test"]
+}
