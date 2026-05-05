@@ -21,7 +21,7 @@
       ],
       "options": {
         "commands": [
-          "rm -rf build/*",
+          "npx shx rm -rf build/*",
           "tsup --config tsup.config.ts --format esm,cjs",
           "tsup --config tsup.types.config.ts --dts-only"
         ],
